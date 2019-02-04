@@ -9,19 +9,27 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import android.location.Geocoder
 import java.io.IOException
 import android.R.string.cancel
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.pm.PackageManager
 import android.text.InputType
 import android.widget.EditText
-import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.*
+import java.util.jar.Manifest
+import org.json.JSONObject
+import android.content.Intent
+import android.support.v4.app.FragmentActivity
+import android.text.method.TextKeyListener.clear
+import android.util.Log
+import com.android.volley.Response
+import com.android.volley.VolleyError
+import com.android.volley.toolbox.JsonObjectRequest
 
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private lateinit var mMap: GoogleMap
 
@@ -49,7 +57,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         ) { _, _ ->
             run {
                 location = getLocationFromAddress(this, input.text.toString())
-                mMap.addMarker(MarkerOptions().position(location!!).title("Marker"))
+                val marker = MarkerOptions()
+                    .position(location!!)
+                    .title("Marker")
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.button))
+
+                mMap.addMarker(marker)
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 18.5f))
             }
         }
@@ -73,6 +86,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style))
+        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1)
+        else
+            mMap.isMyLocationEnabled = true
+    }
+
+    override fun onMarkerClick(marker: Marker): Boolean {
+
+        return true
     }
 
     fun getLocationFromAddress(context: Context, strAddress: String): LatLng? {
@@ -93,5 +115,34 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         return p1
     }
 
+    private fun loadNearByPlaces(latitude: Double, longitude: Double)
+
+    //YOU Can change this type at your own will, e.g hospital, cafe, restaurant.... and see how it all works
+    {
+
+
+        mMap.clear()
+        val i = intent
+        val type = "any"
+
+        val googlePlacesUrl = StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?")
+        googlePlacesUrl.append("location=").append(latitude).append(",").append(longitude)
+        googlePlacesUrl.append("&radius=").append(500)
+        googlePlacesUrl.append("&types=").append(type)
+        googlePlacesUrl.append("&sensor=true")
+        googlePlacesUrl.append("&key=${R.string.google_maps_key}")
+
+        val request = JsonObjectRequest(googlePlacesUrl.toString(),
+            Response.Listener<JSONObject> { result ->
+                Log.i(FragmentActivity.TAG, "onResponse: Result= $result")
+                parseLocationResult(result)
+            },
+            Response.ErrorListener { error ->
+                Log.e(FragmentActivity.TAG, "onErrorResponse: Error= $error")
+                Log.e(FragmentActivity.TAG, "onErrorResponse: Error= " + error.getMessage())
+            })
+
+        AppController.getInstance().addToRequestQueue(request)
+    }
 
 }
