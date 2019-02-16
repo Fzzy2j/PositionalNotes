@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+            android:text="Address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/addressView" android:textAlignment="center"
+            android:layout_marginTop="60dp" android:textSize="24sp"/>
+    <Button
+            android:text="Paint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/paintButton" android:layout_marginTop="60dp"
+            android:onClick="startPaintActivity"/>
+    <Button
+            android:text="Violation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/violationButton" android:layout_marginTop="60dp"
+            android:onClick="startViolationActivity"/>
+    <Button
+            android:text="Landscape"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/landscapeButton" android:layout_marginTop="60dp"
+            android:onClick="startLandscapeActivity"/>
+</LinearLayout>
