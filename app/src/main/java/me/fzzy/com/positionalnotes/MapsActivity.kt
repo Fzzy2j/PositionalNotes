@@ -13,6 +13,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import me.fzzy.com.positionalnotes.util.AddressHolder
 import me.fzzy.com.positionalnotes.util.SonarThread
 import java.util.*
 
@@ -23,7 +24,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     private lateinit var sonar: SonarThread
 
     companion object {
-        val EXTRA_ADDRESS = "me.fzzy.com.positionalnotes.ADDRESS"
+        const val EXTRA_ADDRESS = "me.fzzy.com.positionalnotes.ADDRESS"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,22 +41,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style))
         mMap.setOnMarkerClickListener(this)
 
-        sonar = SonarThread(this, mMap)
-        sonar.addObserver(this)
-        Thread(sonar).start()
-
         if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1)
         else {
             mMap.isMyLocationEnabled = true
             val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
             val criteria = Criteria()
+            sonar = SonarThread.getInstance(this, locationManager)
+            sonar.addObserver(this)
+            Thread(sonar).start()
 
             val location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false))
 
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 18.5f))
-
         }
+
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
@@ -77,8 +77,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     .title(arg.getAddressLine(0))
                     .anchor(0.5f, 0.5f)
                 mMap.addMarker(marker).tag = arg
-
             }
+            AddressHolder.save(this)
         }
     }
 

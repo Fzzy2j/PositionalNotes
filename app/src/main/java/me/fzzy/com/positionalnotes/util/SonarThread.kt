@@ -2,33 +2,41 @@ package me.fzzy.com.positionalnotes.util
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Address
 import android.location.Criteria
 import android.location.Geocoder
 import android.location.LocationManager
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import java.util.*
 
-class SonarThread constructor(private val context: Context, private val mMap: GoogleMap) : Observable(), Runnable {
+class SonarThread private constructor(
+    private val locationManager: LocationManager,
+    private val coder: Geocoder
+) : Observable(), Runnable {
 
     private val random = Random()
-    private val coder = Geocoder(context)
-
-    private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     private val criteria = Criteria()
 
-    private val addresses = arrayListOf<String>()
+    companion object {
+        private var instance: SonarThread? = null
 
-    fun getAllAddresses() {
+        fun getInstance(context: Context, locationManager: LocationManager): SonarThread {
+            if (instance == null) {
+                val coder = Geocoder(context)
+                AddressHolder.load(context)
+                instance = SonarThread(locationManager, coder)
+            }
 
+            return instance!!
+        }
     }
 
     override fun run() {
+        for (known in AddressHolder.getAllAddresses()) {
+            setChanged()
+            notifyObservers(coder.getFromLocationName(known, 1)[0])
+        }
         while (true) {
-            if (context.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            try {
                 val location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false))
 
                 val layer = random.nextInt(3) + 1
@@ -43,14 +51,16 @@ class SonarThread constructor(private val context: Context, private val mMap: Go
                 val loc = LatLng(location.latitude + (x / 5000.0 * r), location.longitude + (y / 5000.0 * r))
                 val address = coder.getFromLocation(loc.latitude, loc.longitude, 1)[0]
 
-                if (!addresses.contains(address.getAddressLine(0))) {
-                    addresses.add(address.getAddressLine(0))
+                if (!AddressHolder.exists(address.getAddressLine(0))) {
+                    AddressHolder.addAddress(address)
+
                     setChanged()
                     notifyObservers(address)
                 }
-
-                Thread.sleep(500)
+            } catch (e: SecurityException) {
+                //TODO log
             }
+            Thread.sleep(500)
         }
     }
 
