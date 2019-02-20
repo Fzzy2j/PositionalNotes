@@ -8,10 +8,10 @@ class LandscapeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_address_options)
+        setContentView(R.layout.activity_landscape)
 
         val address = intent.getStringExtra(MapsActivity.EXTRA_ADDRESS)
 
-        findViewById<TextView>(R.id.addressView).text = address
+        findViewById<TextView>(R.id.landscapeAddressView).text = address
     }
 }

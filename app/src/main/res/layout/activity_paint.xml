@@ -5,8 +5,24 @@
               android:layout_height="match_parent">
 
     <TextView
-            android:text="Paint"
+            android:text="Address"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:id="@+id/paintTitle" android:layout_marginTop="60dp"
-            android:textSize="18sp" android:textAlignment="center"/>
+            android:layout_height="wrap_content" android:id="@+id/paintAddressView" android:textAlignment="center"
+            android:layout_marginTop="60dp" android:textSize="24sp"/>
+    <Button
+            android:text="Wood Trim"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/paintWoodTrimButton" android:layout_marginTop="60dp"/>
+    <Button
+            android:text="Iron Trim"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/paintIronTrimButton" android:layout_marginTop="60dp"/>
+    <Button
+            android:text="Stucco"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/paintStuccoButton" android:layout_marginTop="60dp"/>
+    <Button
+            android:text="Notes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/paintNotesButton" android:layout_marginTop="60dp"/>
 </LinearLayout>

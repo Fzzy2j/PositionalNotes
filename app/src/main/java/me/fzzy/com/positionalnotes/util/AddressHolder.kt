@@ -9,15 +9,16 @@ import java.io.*
 object AddressHolder {
 
     private val gson = Gson()
-
     private val a = A()
 
-    fun addAddress(address: String) {
+    fun addAddress(address: String, context: Context) {
+        if (a.addresses.contains(address)) return
         a.addresses.add(address)
+        save(context)
     }
 
-    fun addAddress(address: Address) {
-        addAddress(address.getAddressLine(0))
+    fun addAddress(address: Address, context: Context) {
+        addAddress(address.getAddressLine(0), context)
     }
 
     fun exists(address: String): Boolean {
@@ -25,7 +26,7 @@ object AddressHolder {
     }
 
     fun exists(address: Address): Boolean {
-        return a.addresses.contains(address.getAddressLine(0))
+        return exists(address.getAddressLine(0))
     }
 
     fun getAllAddresses(): ArrayList<String> {

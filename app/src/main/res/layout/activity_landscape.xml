@@ -4,4 +4,23 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
+    <TextView
+            android:text="Address"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/landscapeAddressView" android:textAlignment="center"
+            android:layout_marginTop="60dp" android:textSize="24sp"/>
+    <Button
+            android:text="Trees"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/landscapeTreesButton" android:layout_marginTop="60dp"/>
+    <Button
+            android:text="Shrubs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/landscapeShrubsButton"
+            android:layout_marginTop="60dp"/>
+    <Button
+            android:text="Irrigation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/landscapeIrrigationButton"
+            android:layout_marginTop="60dp"/>
 </LinearLayout>

@@ -52,8 +52,6 @@ class SonarThread private constructor(
                 val address = coder.getFromLocation(loc.latitude, loc.longitude, 1)[0]
 
                 if (!AddressHolder.exists(address.getAddressLine(0))) {
-                    AddressHolder.addAddress(address)
-
                     setChanged()
                     notifyObservers(address)
                 }

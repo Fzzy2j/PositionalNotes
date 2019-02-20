@@ -78,7 +78,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                     .anchor(0.5f, 0.5f)
                 mMap.addMarker(marker).tag = arg
             }
-            AddressHolder.save(this)
+            AddressHolder.addAddress(arg, this)
         }
     }
 
