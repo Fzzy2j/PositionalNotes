@@ -60,8 +60,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     override fun onMarkerClick(marker: Marker): Boolean {
         val intent = Intent(this, AddressOptionsActivity::class.java)
-        val address = marker.tag as Address
-        intent.putExtra(EXTRA_ADDRESS, address.getAddressLine(0))
+        val address = marker.tag as AddressHolder.FzzyAddress
+        intent.putExtra(EXTRA_ADDRESS, address.name)
 
         startActivity(intent)
 
@@ -69,16 +69,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     override fun update(o: Observable?, arg: Any?) {
-        if (arg is Address) {
+        if (arg is AddressHolder.FzzyAddress) {
             runOnUiThread {
                 val marker = MarkerOptions()
                     .position(LatLng(arg.latitude, arg.longitude))
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.button))
-                    .title(arg.getAddressLine(0))
+                    .title(arg.name)
                     .anchor(0.5f, 0.5f)
                 mMap.addMarker(marker).tag = arg
             }
-            AddressHolder.addAddress(arg, this)
         }
     }
 

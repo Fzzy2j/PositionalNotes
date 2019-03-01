@@ -6,6 +6,7 @@ import android.location.Criteria
 import android.location.Geocoder
 import android.location.LocationManager
 import com.google.android.gms.maps.model.LatLng
+import java.io.File
 import java.util.*
 
 class SonarThread private constructor(
@@ -19,11 +20,13 @@ class SonarThread private constructor(
     companion object {
         private var instance: SonarThread? = null
 
+        private lateinit var dir: File
+
         fun getInstance(context: Context, locationManager: LocationManager): SonarThread {
             if (instance == null) {
                 val coder = Geocoder(context)
-                AddressHolder.load(context)
                 instance = SonarThread(locationManager, coder)
+                dir = context.filesDir
             }
 
             return instance!!
@@ -31,9 +34,9 @@ class SonarThread private constructor(
     }
 
     override fun run() {
-        for (known in AddressHolder.getAllAddresses()) {
+        for (known in AddressHolder.getAllAddresses(dir)) {
             setChanged()
-            notifyObservers(coder.getFromLocationName(known, 1)[0])
+            notifyObservers(known)
         }
         while (true) {
             try {
@@ -51,14 +54,14 @@ class SonarThread private constructor(
                 val loc = LatLng(location.latitude + (x / 5000.0 * r), location.longitude + (y / 5000.0 * r))
                 val address = coder.getFromLocation(loc.latitude, loc.longitude, 1)[0]
 
-                if (!AddressHolder.exists(address.getAddressLine(0))) {
+                if (!AddressHolder.exists(address, dir)) {
                     setChanged()
-                    notifyObservers(address)
+                    notifyObservers(AddressHolder.addAddress(address, dir))
                 }
             } catch (e: SecurityException) {
                 //TODO log
             }
-            Thread.sleep(500)
+            Thread.sleep(2000)
         }
     }
 
